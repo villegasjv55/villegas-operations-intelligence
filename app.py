@@ -16,6 +16,7 @@ pages = st.navigation({
         st.Page("pages/guide.py", title="How It Works", icon=":material/menu_book:"),
     ],
     "Modules": [
+        st.Page("pages/sales.py", title="Sales Analytics", icon=":material/storefront:"),
         st.Page("pages/seller_logistics.py", title="Seller & Logistics",
                 icon=":material/local_shipping:"),
         st.Page("pages/operations.py", title="Operations Performance",
