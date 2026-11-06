@@ -3,50 +3,19 @@ import plotly.express as px
 import pydeck as pdk
 import streamlit as st
 
-from src import analytics, insights, logistics
-from src.style import (ACCENT, DANGER, WARN, apply_style, chart_title, hero,
-                       insight, kpi_card, section_title)
+from src import insights, logistics, shared
+from src.style import (ACCENT, DANGER, WARN, chart_title, hero, insight, kpi_card,
+                       section_title)
 
-st.set_page_config(page_title="Seller & Logistics | VOI", page_icon="🚚", layout="wide")
-apply_style()
-
-
-@st.cache_data
-def get_order_facts():
-    return analytics.load_order_facts()
-
-
-@st.cache_data
-def get_item_facts():
-    return logistics.load_item_facts()
-
-
-@st.cache_data
-def get_state_centers():
-    return logistics.state_centers()
-
-
-facts_all = get_order_facts()
-items_all = get_item_facts()
-
-# ---------- Sidebar filters ----------
-st.sidebar.header("Filters")
-exclude_thin = st.sidebar.checkbox(
-    "Exclude incomplete months", value=True,
-    help=f"Drops months with fewer than {analytics.MIN_MONTHLY_ORDERS} orders.",
-)
-months = (analytics.complete_months(facts_all) if exclude_thin
-          else sorted(facts_all["purchase_month"].unique()))
-start, end = st.sidebar.select_slider(
-    "Purchase months", options=months, value=(months[0], months[-1])
-)
+start, end = shared.selected_months()
+facts_all = shared.order_facts()
+items_all = shared.item_facts()
 facts = facts_all[facts_all["purchase_month"].between(start, end)]
 items = items_all[items_all["purchase_month"].between(start, end)]
-st.sidebar.caption(f"{len(facts):,} orders selected")
 
 # ---------- Header ----------
 hero(
-    "Operations Intelligence",
+    "Villegas Analytics · Operations Intelligence",
     "Seller & Logistics Performance",
     f"Which sellers and regions cause late deliveries · "
     f"{insights.fmt_month(start)} to {insights.fmt_month(end)}",
@@ -74,7 +43,7 @@ map_col, info_col = st.columns([3, 2])
 with map_col:
     with st.container(border=True, key="card_map"):
         chart_title("Average delivery time by customer state")
-        geo = states.merge(get_state_centers(), on="customer_state")
+        geo = states.merge(shared.state_centers(), on="customer_state")
         geo["color"] = logistics.late_rate_colors(geo["late_rate"])
         layer = pdk.Layer(
             "ColumnLayer",

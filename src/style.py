@@ -87,3 +87,30 @@ def insight(text):
         f'<div class="insight"><span class="insight-tag">What this shows</span>{text}</div>',
         unsafe_allow_html=True,
     )
+
+def sidebar_brand():
+    """Brand card shown in the sidebar under the filters."""
+    st.sidebar.markdown(
+        '<div style="margin-top:18px;padding:14px 16px;border-radius:14px;'
+        'background:linear-gradient(145deg,rgba(34,211,238,0.10),rgba(129,140,248,0.08));'
+        'border:1px solid rgba(34,211,238,0.22);font-family:Inter,sans-serif;">'
+        '<div style="color:#22D3EE;font-size:0.68rem;font-weight:700;letter-spacing:0.14em;">'
+        'A VILLEGAS ANALYTICS PROJECT</div>'
+        '<div style="color:#F1F5F9;font-size:0.95rem;font-weight:700;margin-top:4px;">'
+        'Villegas Operations Intelligence</div>'
+        '<div style="color:#8FA3BF;font-size:0.78rem;margin-top:2px;">Built by Juan Villegas</div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def page_footer():
+    """Brand line at the bottom of every page."""
+    st.markdown(
+        '<div style="margin-top:2.5rem;padding-top:1rem;'
+        'border-top:1px solid rgba(148,163,184,0.15);font-family:Inter,sans-serif;'
+        'font-size:0.8rem;color:#8FA3BF;">'
+        '<b style="color:#22D3EE;">Villegas Analytics</b> · Villegas Operations Intelligence'
+        ' · Built by Juan Villegas</div>',
+        unsafe_allow_html=True,
+    )
