@@ -1,4 +1,4 @@
-"""Shared look and feel: page CSS, chart template, and reusable HTML pieces."""
+"""Shared look and feel: page CSS, chart template, tables, and reusable HTML pieces."""
 import plotly.graph_objects as go
 import plotly.io as pio
 import streamlit as st
@@ -31,31 +31,68 @@ header[data-testid="stHeader"] {background: transparent;}
 .section-title, .chart-title {font-family: 'Inter', sans-serif; color: #F1F5F9; font-weight: 700;}
 .section-title {font-size: 1.35rem; margin: 1.6rem 0 0.8rem;}
 .chart-title {font-size: 1.02rem; margin: 2px 0 6px;}
-.insight {font-family: 'Inter', sans-serif; background: linear-gradient(90deg, rgba(34,211,238,0.09), rgba(34,211,238,0.02)); border: 1px solid rgba(34,211,238,0.18); border-left: 3px solid #22D3EE; border-radius: 12px; padding: 12px 16px; color: #CBD5E1; font-size: 0.9rem; line-height: 1.55; margin: 6px 0 4px;}
+.insight {font-family: 'Inter', sans-serif; background: linear-gradient(90deg, rgba(34,211,238,0.09), rgba(34,211,238,0.02)); border: 1px solid rgba(34,211,238,0.18); border-left: 3px solid #22D3EE; border-radius: 12px; padding: 12px 16px; color: #CBD5E1; font-size: 0.9rem; line-height: 1.55; margin: 6px 0 10px;}
 .insight b {color: #F8FAFC;}
 .insight-tag {display: block; color: #22D3EE; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px;}
 [class*="st-key-card"] {background: linear-gradient(145deg, rgba(20,30,52,0.88), rgba(12,19,35,0.88)); border-radius: 18px !important; border: 1px solid rgba(148,163,184,0.14) !important; box-shadow: 0 16px 38px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.05); padding: 6px 4px;}
+[data-testid="stDataFrame"] {border: 1px solid rgba(148,163,184,0.18); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 22px rgba(0,0,0,0.30);}
+[data-testid="stMarkdownContainer"] table {width: 100%; border-collapse: collapse; font-size: 0.88rem;}
+[data-testid="stMarkdownContainer"] th {background: rgba(34,211,238,0.10); color: #F1F5F9; text-align: left; padding: 9px 10px;}
+[data-testid="stMarkdownContainer"] td {padding: 8px 10px; border-top: 1px solid rgba(148,163,184,0.14); vertical-align: top; color: #CBD5E1;}
 section[data-testid="stSidebar"] {border-right: 1px solid rgba(148,163,184,0.12);}
 </style>
 """
 
 
 def apply_style():
-    """Load the page CSS and set the default chart style. Call once at the top of every page."""
+    """Load the page CSS and set the default chart style. Called once in app.py."""
     st.markdown(CSS, unsafe_allow_html=True)
+    axis = dict(gridcolor=GRID, zeroline=False, linecolor=GRID, automargin=True,
+                title=dict(standoff=12, font=dict(size=12, color=MUTED)),
+                tickfont=dict(size=12))
     pio.templates["voi"] = go.layout.Template(
         layout=dict(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Inter, -apple-system, Segoe UI, sans-serif", color="#CBD5E1", size=13),
             colorway=[ACCENT, ACCENT_2, WARN, DANGER, "#34D399"],
-            xaxis=dict(gridcolor=GRID, zeroline=False, linecolor=GRID, showgrid=False),
-            yaxis=dict(gridcolor=GRID, zeroline=False, linecolor=GRID),
-            margin=dict(l=10, r=10, t=20, b=10),
+            xaxis=dict(axis, showgrid=False),
+            yaxis=axis,
+            margin=dict(l=70, r=40, t=50, b=60),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0,
+                        bgcolor="rgba(0,0,0,0)", font=dict(size=12)),
+            coloraxis=dict(colorbar=dict(
+                thickness=12, len=0.85, outlinewidth=0,
+                title=dict(side="top", font=dict(size=12, color=MUTED)),
+                tickfont=dict(size=11),
+            )),
             hoverlabel=dict(bgcolor="#111A2E", bordercolor=ACCENT, font=dict(color="#F1F5F9")),
-        )
+        ),
+        data=dict(bar=[go.Bar(cliponaxis=False)]),
     )
     pio.templates.default = "voi"
+
+
+def show_table(df, **kwargs):
+    """Every table in the app: progress bars for %, R$ for money, stars for reviews."""
+    config = {}
+    for col in df.columns:
+        name = str(col).lower()
+        if "%" in name:
+            config[col] = st.column_config.ProgressColumn(
+                col, min_value=0, max_value=100, format="%.1f%%", width="medium")
+        elif "r$" in name:
+            config[col] = st.column_config.NumberColumn(col, format="R$ %.2f", width="medium")
+        elif "review" in name:
+            config[col] = st.column_config.NumberColumn(col, format="%.2f ★", width="small")
+        elif str(df[col].dtype).startswith(("int", "Int")):
+            config[col] = st.column_config.NumberColumn(col, format="localized", width="small")
+        elif str(df[col].dtype).startswith("float"):
+            config[col] = st.column_config.NumberColumn(col, format="%.1f", width="small")
+        else:
+            config[col] = st.column_config.Column(col, width="medium")
+    kwargs.setdefault("hide_index", True)
+    st.dataframe(df, column_config=config, **kwargs)
 
 
 def hero(eyebrow, title, subtitle):
@@ -87,6 +124,7 @@ def insight(text):
         f'<div class="insight"><span class="insight-tag">What this shows</span>{text}</div>',
         unsafe_allow_html=True,
     )
+
 
 def sidebar_brand():
     """Brand card shown in the sidebar under the filters."""

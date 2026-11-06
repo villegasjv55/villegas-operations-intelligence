@@ -5,7 +5,7 @@ import streamlit as st
 
 from src import insights, logistics, shared
 from src.style import (ACCENT, DANGER, WARN, chart_title, hero, insight, kpi_card,
-                       section_title)
+                       section_title, show_table)
 
 start, end = shared.selected_months()
 facts_all = shared.order_facts()
@@ -77,7 +77,7 @@ with info_col:
     with st.container(border=True, key="card_states"):
         chart_title("Delivery by state")
         insight(logistics.state_insight(states))
-        st.dataframe(
+        show_table(
             states[["state_name", "orders", "avg_delivery_days", "late_rate", "avg_review"]]
             .rename(columns={
                 "state_name": "State", "orders": "Orders",
@@ -127,10 +127,10 @@ with st.container(border=True, key="card_bottom10"):
         "avg_handoff_days": "Avg handoff days", "avg_review": "Avg review",
         "revenue": "Revenue (R$)",
     }
-    st.dataframe(bottom[list(columns)].rename(columns=columns), hide_index=True)
+    show_table(bottom[list(columns)].rename(columns=columns), hide_index=True)
     with st.expander("See the full seller scorecard"):
         full = card.copy()
         full["seller"] = full["seller_id"].str[:8]
-        st.dataframe(full[list(columns)].rename(columns=columns), hide_index=True)
+        show_table(full[list(columns)].rename(columns=columns), hide_index=True)
 
 st.caption("Data: Olist Brazilian E-Commerce Public Dataset (Kaggle), licensed CC BY-NC-SA 4.0.")

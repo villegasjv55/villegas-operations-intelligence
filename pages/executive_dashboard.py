@@ -5,7 +5,7 @@ import streamlit as st
 
 from src import analytics, insights, shared
 from src.style import (ACCENT, DANGER, WARN, chart_title, hero, insight, kpi_card,
-                       section_title)
+                       section_title, show_table)
 
 start, end = shared.selected_months()
 all_data = shared.order_facts()
@@ -95,7 +95,7 @@ with detail_col:
     with st.container(border=True, key="card_delay_detail"):
         chart_title("The numbers behind it")
         insight(insights.delay_insight(delay))
-        st.dataframe(
+        show_table(
             delay.rename(columns={
                 "delay_group": "Delivery",
                 "orders": "Orders",

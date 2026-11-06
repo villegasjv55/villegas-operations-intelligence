@@ -18,6 +18,8 @@ pages = st.navigation({
     "Modules": [
         st.Page("pages/seller_logistics.py", title="Seller & Logistics",
                 icon=":material/local_shipping:"),
+        st.Page("pages/operations.py", title="Operations Performance",
+                icon=":material/pending_actions:"),
     ],
 })
 

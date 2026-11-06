@@ -179,3 +179,106 @@ def how_to_read(page_title):
     if text:
         with st.expander("How to read this page", icon=":material/info:"):
             st.markdown(text)
+
+KPIS.extend([
+    ("Cancellation rate", "Share of orders that were canceled or could not be fulfilled.",
+     "Canceled + unavailable orders ÷ all orders", ""),
+    ("Never delivered (overdue)", "Orders still not delivered after their promised date passed.",
+     "Open orders whose promised date is before the day the data was frozen", ""),
+    ("Payment approval time", "How long payment approval takes after purchase.",
+     "Approval date − purchase date", "Shown in hours."),
+    ("Carrier transit time", "How long the shipping company takes to deliver.",
+     "Delivery date − carrier pickup date", "Delivered orders only."),
+])
+
+PAGE_HELP["Operations Performance"] = """
+**What this page is for:** finding where orders get stuck, and listing every order that needs follow-up.
+
+- **Top cards:** late deliveries, orders that never arrived, the cancellation rate, and average
+  carrier transit time.
+- **Where the time goes:** each delivered order is split into three stages: payment approval,
+  seller handoff, and carrier transit. **Cyan = on-time orders, red = late orders.** The stage with the
+  biggest gap between the two is where late orders lose the most time.
+- **Orders that did not complete:** every status other than delivered, such as canceled, unavailable,
+  or still shipping when the data was frozen.
+- **Late-order exception list:** every late or never-delivered order, worst first. Use the filters
+  above the table, then **Download CSV** to get a spreadsheet an operations team could work from.
+
+"Days over" means days past the promised date. For orders that never arrived, it is counted up to
+the day the data was frozen.
+"""
+
+
+# ---------- The data, explained in detail ----------
+TABLES = [
+    ("orders", "One order", "Order ID, customer ID, status, and the five dates: purchase, "
+     "payment approval, carrier pickup, delivery, and the promised date", "99,441"),
+    ("order_items", "One product inside an order", "Product, seller, price, shipping charge, "
+     "and the seller's deadline to hand it to the carrier", "112,650"),
+    ("customers", "The customer behind one order", "Customer ID per order, a permanent customer "
+     "ID for spotting repeat buyers, zip code, city and state", "99,441"),
+    ("sellers", "One seller", "Seller ID, zip code, city and state", "3,095"),
+    ("products", "One product", "Category (in Portuguese), weight, size, number of photos", "32,951"),
+    ("payments", "One payment", "Payment type (card, boleto, voucher, debit), installments, amount. "
+     "An order can be paid in several parts", "103,886"),
+    ("reviews", "One customer review", "Score from 1 to 5, optional comment (in Portuguese), "
+     "and when it was written", "99,224"),
+    ("geolocation", "A map point for a zip-code area", "Zip code prefix, latitude, longitude, "
+     "city and state. Used to place states on the 3D map", "1,000,163"),
+    ("category_translation", "One product category", "Portuguese name and its English name", "71"),
+]
+
+
+def tables_markdown():
+    lines = ["| Data file | One row is... | What it contains | Rows |", "|---|---|---|---|"]
+    for name, row, contents, rows in TABLES:
+        lines.append(f"| **{name}** | {row} | {contents} | {rows} |")
+    return "\n".join(lines)
+
+
+BUILT_TABLES = """
+The raw files are never changed. Instead, the app builds **clean tables** from them:
+
+- **orders_clean:** every order with real dates (instead of text) plus calculated columns: delivery
+  days, promised days, seller handoff days, whether it was late, how many days late, and a flag for
+  impossible dates (for example, delivered before it was bought).
+- **products_clean:** every product with an **English** category name, and "unknown" when the
+  category is missing.
+- **order_facts:** **one row per order** with everything the dashboard needs in one place: customer
+  state, revenue, shipping cost, number of items and sellers, review score, and all the delivery
+  measures. Items, payments and reviews are summarized per order *before* being joined, so no order
+  is ever counted twice.
+"""
+
+EXAMPLE_ORDER = """
+*An illustrative example of how one order turns into the numbers you see:*
+
+1. On **March 3** a customer in **Rio de Janeiro** buys a bed sheet set for **R$ 129.90**, plus
+   **R$ 18.40** shipping. Checkout promises delivery by **March 26**.
+   -> This adds R$ 129.90 to **Revenue**, R$ 18.40 to **Freight cost**, and 1 to **Orders**.
+2. The payment is approved **6 hours** later. -> **Payment approval time**.
+3. The seller's deadline to hand the package to the carrier is **March 7**, but they hand it over on
+   **March 8**. -> This item counts toward the seller's **Missed handoff rate**.
+4. The carrier delivers on **March 29**. -> **Delivery time** is 26 days. It arrived **3 days after**
+   the promised date, so it counts as **late** and lands in the **1-3 days late** group.
+5. The customer leaves **2 stars**. -> It lowers the **Average review** and counts as a
+   **detractor** (a 1 or 2 star review).
+
+Multiply that by about 100,000 orders and you have every chart in this app.
+"""
+
+GLOSSARY = """
+- **Order status:** where an order ended up: delivered, shipped (still on the way when the data was
+  frozen), canceled, unavailable (could not be fulfilled), invoiced, processing, created, or approved.
+- **Promised date:** the delivery date shown to the customer at checkout.
+- **Carrier:** the shipping company that delivers the package.
+- **Handoff:** the moment the seller gives the package to the carrier. Each item has a deadline for it.
+- **Freight:** the shipping charge the customer pays.
+- **Detractor:** a customer who gave a 1 or 2 star review.
+- **Anonymized:** names and personal details were removed, which is why IDs look like random codes.
+- **Snapshot / frozen date:** the last day in the data. Nothing after it is known.
+- **Complete month:** a month with at least 500 orders, used so trend lines are fair.
+- **State codes:** Brazil has 27 states, written as two letters, such as SP (São Paulo),
+  RJ (Rio de Janeiro), MG (Minas Gerais), RS (Rio Grande do Sul), and AM (Amazonas).
+- **R$:** the Brazilian real. Values are not converted to US dollars.
+"""
