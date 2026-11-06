@@ -340,3 +340,35 @@ busy months cause delivery problems.
   orders arrived on time. If the dots slope downward, busy months hurt delivery. The **correlation**
   number runs from -1 to 1: close to 0 means no real link.
 """
+
+
+PAGE_HELP["Findings & Recommendations"] = """
+**What this page is for:** the three actions the data supports, written the way an analyst would
+present them to a manager.
+
+Each recommendation has three parts:
+- **What we found:** the numbers behind it, calculated live from the data.
+- **What to do:** specific, practical steps an operations team could take.
+- **Expected impact:** an estimate of what would improve if the problem were fixed.
+
+The impact numbers are **estimates of the opportunity**, not guarantees. They assume the problem
+group performs as well as the comparison group. A real team would test each change before rolling
+it out. Every number updates when you change the months in the sidebar.
+"""
+
+
+PAGE_HELP["Reporting Center"] = """
+**What this page is for:** producing the monthly report an analyst would send to a manager.
+
+- **Report month:** this page has its own month picker, because a report always covers one full
+  month. It ignores the sidebar range.
+- **Top cards:** the month's key numbers. The colored line under each one compares it with the
+  month before: **green = better, red = worse.** For costs and problems (late deliveries,
+  cancellations), going down is good.
+- **Summary and top issues:** written automatically from the data. The issues are the month's
+  biggest problems: an on-time drop, the state with the most late deliveries, the seller with the
+  most late orders, and the category with the worst reviews.
+- **Download report:** a complete report page. Open it in your browser, then use
+  **File > Print > Save as PDF** to get a PDF to email.
+- **Download CSV:** the same numbers as a spreadsheet.
+"""

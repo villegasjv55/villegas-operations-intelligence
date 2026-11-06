@@ -13,6 +13,8 @@ pages = st.navigation({
     "Overview": [
         st.Page("pages/executive_dashboard.py", title="Executive Dashboard",
                 icon=":material/dashboard:", default=True),
+        st.Page("pages/findings.py", title="Findings & Recommendations",
+                icon=":material/lightbulb:"),
         st.Page("pages/guide.py", title="How It Works", icon=":material/menu_book:"),
     ],
     "Modules": [
@@ -21,6 +23,8 @@ pages = st.navigation({
                 icon=":material/local_shipping:"),
         st.Page("pages/operations.py", title="Operations Performance",
                 icon=":material/pending_actions:"),
+        st.Page("pages/reporting.py", title="Reporting Center",
+                icon=":material/summarize:"),
     ],
 })
 
