@@ -73,7 +73,7 @@ for _, r in table.iterrows():
         "Change": reporting.fmt_change(name, r),
         "Better or worse": {"good": "Better", "bad": "Worse"}.get(r["direction"], "No change"),
     })
-display = st.cache_data(lambda x: x)(rows) if False else rows
+display = rows
 with st.container(border=True, key="card_report_table"):
     import pandas as pd
     show_table(pd.DataFrame(display))
