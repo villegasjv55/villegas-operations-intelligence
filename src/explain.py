@@ -311,3 +311,32 @@ busy months cause delivery problems.
   orders arrived on time. If the dots slope downward, busy months hurt delivery. The **correlation**
   number runs from -1 to 1: close to 0 means no real link.
 """
+
+
+KPIS.extend([
+    ("Repeat customer rate", "Share of customers who came back and ordered again.",
+     "Customers with 2+ orders ÷ all unique customers",
+     "Uses the permanent customer ID, because Olist gives each order a new customer ID."),
+    ("Revenue share", "How much of total revenue one category or state brings in.",
+     "Its revenue ÷ total revenue", ""),
+    ("Shipping cost % of price", "How expensive shipping is compared with the product.",
+     "Freight ÷ item prices, per category", "High values often mean heavy or bulky products."),
+    ("Installments", "How many parts a credit card payment is split into.",
+     "From the payments table", "Common in Brazil, even for small purchases."),
+])
+
+PAGE_HELP["Sales Analytics"] = """
+**What this page is for:** understanding what sells, where customers are, how they pay, and whether
+busy months cause delivery problems.
+
+- **Top cards:** the biggest category, how much the top 10 categories bring in, how much money comes
+  from credit cards, and how many customers came back to order again.
+- **What sells:** the 10 categories with the most revenue. The label on each bar is its share of
+  total revenue. Open the full table to see reviews, late rate and shipping cost for every category.
+- **Where customers are:** the 10 states with the most revenue.
+- **How customers pay:** the share of money paid by each method, and how credit card payments are
+  split into installments. A **boleto** is a Brazilian bank slip paid in cash or online.
+- **Do sales peaks cause delays?** Each dot is one month. Further right = more orders. Higher = more
+  orders arrived on time. If the dots slope downward, busy months hurt delivery. The **correlation**
+  number runs from -1 to 1: close to 0 means no real link.
+"""
