@@ -8,6 +8,28 @@ Python · SQL · SQLite · Pandas · Streamlit · Plotly · pydeck · pytest
 
 ---
 
+## Screenshots
+
+**Executive Dashboard:** headline KPIs, trends, and late delivery vs. review score
+![Executive Dashboard](docs/screenshots/dashboard.png)
+
+**Findings & Recommendations:** three data-backed actions with live impact estimates
+![Findings and Recommendations](docs/screenshots/findings.png)
+
+**Seller & Logistics:** 3D map of delivery time by state, plus the seller scorecard
+![Seller and Logistics 3D map](docs/screenshots/map.png)
+
+**Operations Performance:** where late orders lose time, plus the late-order exception list
+![Operations Performance](docs/screenshots/operations.png)
+
+**Sales Analytics:** categories, states, payments, and peaks vs. delays
+![Sales Analytics](docs/screenshots/sales.png)
+
+**Reporting Center:** a one-click monthly report with month-over-month changes
+![Reporting Center](docs/screenshots/report.png)
+
+---
+
 ## Quick start (fastest way to run it)
 
 ### Already set up on this computer: one command
