@@ -23,8 +23,7 @@ pages = st.navigation({
                 icon=":material/local_shipping:"),
         st.Page("pages/operations.py", title="Operations Performance",
                 icon=":material/pending_actions:"),
-        st.Page("pages/reporting.py", title="Reporting Center",
-                icon=":material/summarize:"),
+        st.Page("pages/reporting.py", title="Reporting Center", icon=":material/summarize:"),
     ],
 })
 

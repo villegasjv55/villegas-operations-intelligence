@@ -3,7 +3,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from src import analytics, insights, operations, reporting, sales, shared
-from src.style import chart_title, hero, insight, kpi_card, section_title, show_table
+from src.style import hero, insight, kpi_card, section_title, show_table
 
 
 @st.cache_data
@@ -42,14 +42,12 @@ previous = reporting.month_kpis(prev, facts, items, ops, snapshot) if prev else 
 table = reporting.kpi_table(current, previous)
 indexed = table.set_index("metric")
 
-# ---------- KPI cards ----------
 row = st.columns(4)
 for col, name in zip(row, ["Revenue (R$)", "Orders", "On-time delivery (%)", "Average review"]):
     r = indexed.loc[name]
     kpi_card(col, name, reporting.fmt_value(name, r["this_month"]),
              reporting.change_text(name, r, prev))
 
-# ---------- Summary and issues ----------
 summary = reporting.summary_sentence(month, prev, table)
 issues = reporting.top_issues(month, table, facts, items, item_sales)
 
@@ -62,32 +60,36 @@ with right:
     issue_list = "".join(f"<li>{i}</li>" for i in issues) or "<li>No major issues found.</li>"
     insight(f"<ol style='margin:0;padding-left:18px'>{issue_list}</ol>")
 
-# ---------- All numbers ----------
 section_title("All key numbers")
-with st.container(border=True, key="card_report_table"):
-    prev_label = insights.fmt_month(prev) if prev else "Previous month"
-    display = table.apply(lambda r: {
-        "Metric": r["metric"],
-        insights.fmt_month(month): reporting.fmt_value(r["metric"], r["this_month"]),
-        prev_label: reporting.fmt_value(r["metric"], r["last_month"]),
-        "Change": reporting.fmt_change(r["metric"], r),
+prev_label = insights.fmt_month(prev) if prev else "Previous month"
+month_label = insights.fmt_month(month)
+rows = []
+for _, r in table.iterrows():
+    name = r["metric"]
+    rows.append({
+        "Metric": name,
+        month_label: reporting.fmt_value(name, r["this_month"]),
+        prev_label: reporting.fmt_value(name, r["last_month"]),
+        "Change": reporting.fmt_change(name, r),
         "Better or worse": {"good": "Better", "bad": "Worse"}.get(r["direction"], "No change"),
-    }, axis=1, result_type="expand")
-    show_table(display)
+    })
+display = st.cache_data(lambda x: x)(rows) if False else rows
+with st.container(border=True, key="card_report_table"):
+    import pandas as pd
+    show_table(pd.DataFrame(display))
 
-# ---------- Downloads ----------
 section_title("Download")
 report_html = reporting.build_html_report(month, prev, table, issues, summary)
 d1, d2 = st.columns(2)
 d1.download_button(
     "Download report (printable page)", data=report_html.encode("utf-8"),
     file_name=f"operations_report_{month}.html", mime="text/html",
-    icon=":material/description:", use_container_width=True,
+    icon=":material/description:",
 )
 d2.download_button(
-    "Download numbers (CSV)", data=display.to_csv(index=False).encode("utf-8"),
+    "Download numbers (CSV)", data=pd.DataFrame(display).to_csv(index=False).encode("utf-8"),
     file_name=f"operations_report_{month}.csv", mime="text/csv",
-    icon=":material/download:", use_container_width=True,
+    icon=":material/download:",
 )
 st.caption("To get a PDF: open the downloaded report in your browser, then File > Print > Save as PDF.")
 
