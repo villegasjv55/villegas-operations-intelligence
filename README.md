@@ -1,5 +1,10 @@
 # Villegas Operations Intelligence
 
+[![Live app](https://img.shields.io/badge/Live%20app-Open%20dashboard-FF4B4B?logo=streamlit&logoColor=white)](https://villegas-operations-intelligence.streamlit.app/)
+
+**🔗 Live app: https://villegas-operations-intelligence.streamlit.app/** (free hosting on Streamlit Community Cloud; it may take about 30 seconds to wake up if nobody has opened it in a while)
+
+
 **Operations analytics app built on ~100,000 real e-commerce orders.**
 It answers one business question: *late deliveries are hurting customer satisfaction. Where, why, and what should we fix first?*
 
